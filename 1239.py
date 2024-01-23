@@ -1,21 +1,19 @@
 class Solution:
     def maxLength(self, arr: List[str]) -> int:
-        dp = [0]
-        res = 0
-        
-        for s in arr:
-            a, dup = 0, 0
-            for c in s:
-                dup |= a & (1 << (ord(c) - ord('a')))
-                a |= 1 << (ord(c) - ord('a'))
-            
-            if dup > 0:
-                continue
-            
-            for i in range(len(dp) - 1, -1, -1):
-                if (dp[i] & a) > 0:
-                    continue
-                dp.append(dp[i] | a)
-                res = max(res, bin(dp[i] | a).count('1'))
-        
-        return res
+        def checker(string1, string2):
+            s = set(string1)
+            for i in string2:
+                if(i in s):
+                    return False
+            return True
+        @cache
+        def f(i, string):
+            if(i<0):
+                return len(string)
+            choose = 0
+            notchoose = 0
+            if(checker(string, arr[i]) and len(set(arr[i]))==len(arr[i])):
+                choose = f(i-1, arr[i]+string)
+            notchoose = f(i-1, string)
+            return max(choose, notchoose)
+        return f(len(arr)-1, "")
